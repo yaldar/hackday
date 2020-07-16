@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-app.use(express.static(path.join(__dirname, 'build')));
-
-// // //
-// middleware
+// change this after deployement
+// app.use(express.static(path.join(__dirname, 'build')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+// to allow CORS
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
   res.header(
@@ -14,14 +15,81 @@ app.use(function (req, res, next) {
   );
   next();
 });
+const SPOTIFY_CLIENT_ID = '95bcf8e141d6412c93f95c363a0a896a';
+const SPOTIFY_CLIENT_SECRET = '934a620466c44587964c156f39e47f33';
+const FRONTEND_URI = 'http://localhost:3000'
+const REDIRECT_URI = 'http://localhost:5000/api/callback'
 
-// // //
-app.get('/ping', function (req, res) {
-  return res.send('pong');
-});
+// app.get('/api/login/:email/:password', (req, res) => {
+//   console.log(req.params.email);
+//   // send to spotify API
+//   // res.json({success: true or false, userID: idfromspotify})
+//   res.json({success: true})
+// })
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+///////////////////////
 
-app.listen(process.env.PORT || 8080);
+let request = require('request')
+let querystring = require('querystring')
+
+let redirect_uri =
+  REDIRECT_URI ||
+  'http://localhost:5000/api/callback'
+
+app.get('/api/login', function(req, res) {
+  res.redirect('https://accounts.spotify.com/authorize?' +
+    querystring.stringify({
+      response_type: 'code',
+      client_id: SPOTIFY_CLIENT_ID,
+      scope: 'user-read-private user-read-email',
+      redirect_uri
+    }))
+})
+
+app.get('/api/callback', function(req, res) {
+  let code = req.query.code || null
+  let authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    form: {
+      code: code,
+      redirect_uri,
+      grant_type: 'authorization_code'
+    },
+    headers: {
+      'Authorization': 'Basic ' + (new Buffer(
+        SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET
+      ).toString('base64'))
+    },
+    json: true
+  }
+
+  request.post(authOptions, function(error, response, body) {
+    console.log(body);
+    var access_token = body.access_token
+    let uri = FRONTEND_URI || 'http://localhost:3000'
+    res.redirect(uri + '?access_token=' + access_token)
+  })
+})
+
+let port = process.env.PORT || 5000
+console.log(`Listening on port ${port}. Go /login to initiate authentication flow.`)
+app.listen(port)
+//////////////
+
+
+
+// this one after building
+// app.get('/', function (req, res) {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
+// app.use((req, res) => {
+//   res.status(404).json({ message: 'Page Not Found' });
+// });
+// app.use((err, req, res, next) => {
+//   res
+//     .status(500)
+//     .json({
+//       message: `Something went wrong fetching the data. Try again later. Internal server error: "${err}"`,
+//     });
+// });
+// app.listen(process.env.PORT || 5000);
