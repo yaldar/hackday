@@ -6,7 +6,7 @@ const app = express();
 var cors = require('cors');
 
 // change this after deployement
-// app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 // to allow CORS
