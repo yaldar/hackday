@@ -1,6 +1,6 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import Playlist from './components/Playlist';
 
@@ -20,7 +20,11 @@ const App = () => {
         <header className="App-header"></header>
 
         {cookie.loggedin === 'no' ? (
-          <a href="http://localhost:5000/api/login">click to login</a>
+          <div className="button">
+            <a href="http://localhost:5000/api/login">
+              CLICK TO LOGIN WITH SPOTIFY
+            </a>
+          </div>
         ) : (
           <Playlist />
         )}

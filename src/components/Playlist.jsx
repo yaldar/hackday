@@ -116,6 +116,7 @@ export default function Playlist() {
   return (
     <div>
       <div className="fav-wrapper">{favs}</div>
+      <p className="liked-header">Below is your library of liked songs</p>
       <div className="song-list-wrapper">{allSongs}</div>
     </div>
   );

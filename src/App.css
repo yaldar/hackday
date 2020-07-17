@@ -15,7 +15,36 @@
   border: 1px white solid;
   align-items: center;
   text-align: center;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  padding: 10px;
 }
 
 a {
+  background-color: rgb(36, 212, 78);
+  color: black;
+  padding: 14px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 50px;
+
+  margin-top: 20%;
+  align-self: center;
+  border: 1px white solid;
+}
+.button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  justify-self: center;
+}
+
+a:hover {
+  color: white;
+}
+.liked-header{
+  text-align: center;
+  font-size: 1.3em;
+  margin-bottom: 30px;
 }
