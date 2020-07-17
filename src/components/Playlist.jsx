@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import UnlinkeButton from './UnlikeButton';
+
 export default function Playlist() {
   const [cookie, setCookie] = useCookies();
   const [state, setState] = useState({
     tracks: [],
   });
 
-  let counter = 1;
   const p = useParams();
   const firstUrl = 'https://api.spotify.com/v1/me/tracks';
   const token = p.access_token ? p.access_token : cookie.token;
-  // const firstUrl = `http://localhost:5000/api/tracks/${token}`;
 
   const fetchLiked = nextUrl => {
     fetch(`http://localhost:5000/api/tracks/${token}`, {
@@ -26,7 +24,6 @@ export default function Playlist() {
             name: el.track.name,
             artists: el.track.artists[0].name,
             album: el.track.album.name,
-
             img: el.track.album.images[1].url,
             n: el.next,
           };
@@ -34,7 +31,6 @@ export default function Playlist() {
 
         setState(oldState => ({ tracks: [...oldState.tracks, ...arr] }));
         if (d.next) {
-          counter++;
           fetchLiked(d.next);
         }
       });
@@ -78,8 +74,8 @@ export default function Playlist() {
     }
   }
 
-  var list = [];
-  for (var j = 0; j < counts.length; j++)
+  let list = [];
+  for (let j = 0; j < counts.length; j++)
     list.push({
       albumCount: counts[j],
       album: albums[0][j],
@@ -94,7 +90,7 @@ export default function Playlist() {
       : 1;
   });
 
-  for (var k = 0; k < list.length; k++) {
+  for (let k = 0; k < list.length; k++) {
     counts[k] = list[k].albumCount;
     albums[0][k] = list[k].album;
     albums[1][k] = list[k].artists;
