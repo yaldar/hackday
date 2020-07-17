@@ -1,12 +1,23 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fetch = require('node-fetch');
 const app = express();
+var cors = require('cors');
+
 // change this after deployement
 // app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 // to allow CORS
+app.use(cors());
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000/',
+  }),
+);
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
   res.header(
@@ -31,8 +42,30 @@ const REDIRECT_URI = 'http://localhost:5000/api/callback';
 
 let request = require('request');
 let querystring = require('querystring');
+const { json } = require('body-parser');
 
 let redirect_uri = REDIRECT_URI || 'http://localhost:5000/api/callback';
+
+app.get('/api/tracks/:token', async (req, res) => {
+  const token = req.params.token;
+
+  const h = req.headers;
+
+  const url = h.next;
+
+  console.log(url);
+  // headers: { Authorization: 'Bearer ' + token },
+  let authOptions = {
+    url,
+    headers: { Authorization: 'Bearer ' + token },
+    json: true,
+  };
+
+  request.get(authOptions, function (error, response, body) {
+    console.log(response.body);
+    res.json(response.body);
+  });
+});
 
 app.get('/api/login', function (req, res) {
   res.redirect(
@@ -40,7 +73,8 @@ app.get('/api/login', function (req, res) {
       querystring.stringify({
         response_type: 'code',
         client_id: SPOTIFY_CLIENT_ID,
-        scope: 'user-read-private user-read-email user-library-modify user-library-read',
+        scope:
+          'user-read-private user-read-email user-library-modify user-library-read',
         redirect_uri,
       }),
   );
