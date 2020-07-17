@@ -25,7 +25,8 @@
     "lint": "eslint '*/*.js'",
     "eject": "react-scripts eject",
     "test": "mocha --reporter spec --watch \"src/**/*.spec.js\" \"public/**/*.spec.js\"",
-    "serve": "nodemon server.js"
+    "serve": "nodemon server.js",
+    "prod": "npm run build && npm run serve"
   },
   "eslintConfig": {
     "extends": "react-app"
